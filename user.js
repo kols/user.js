@@ -481,7 +481,7 @@ user_pref("_user.js.parrot", "1200 syntax error: the parrot's a stiff!");
  * safe from the attack if it disables renegotiations but the problem is that the browser can't
  * know that. Setting this pref to true is the only way for the browser to ensure there will be
  * no unsafe renegotiations on the channel between the browser and the server.
- * [STATS] SSL Labs (July 2021) reports over 99% of sites have secure renegotiation [4]
+ * [STATS] SSL Labs (July 2021) reports over 99% of top sites have secure renegotiation [4]
  * [1] https://wiki.mozilla.org/Security:Renegotiation
  * [2] https://datatracker.ietf.org/doc/html/rfc5746
  * [3] https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2009-3555
@@ -490,8 +490,11 @@ user_pref("security.ssl.require_safe_negotiation", true);
 /* 1203: reset TLS 1.0 and 1.1 downgrades i.e. session only ***/
 user_pref("security.tls.version.enable-deprecated", false); // [DEFAULT: false]
 /* 1206: disable TLS1.3 0-RTT (round-trip time) [FF51+]
+ * This data is not forward secret, as it is encrypted solely under keys derived using
+ * the offered PSK. There are no guarantees of non-replay between connections
  * [1] https://github.com/tlswg/tls13-spec/issues/1001
- * [2] https://blog.cloudflare.com/tls-1-3-overview-and-q-and-a/ ***/
+ * [2] https://www.rfc-editor.org/rfc/rfc9001.html#name-replay-attacks-with-0-rtt
+ * [3] https://blog.cloudflare.com/tls-1-3-overview-and-q-and-a/ ***/
 user_pref("security.tls.enable_0rtt_data", false);
 
 /** OCSP (Online Certificate Status Protocol)
@@ -687,18 +690,6 @@ user_pref("dom.disable_window_move_resize", true);
 user_pref("dom.disable_open_during_load", true);
 /* 2404: limit events that can cause a popup [SETUP-WEB] ***/
 user_pref("dom.popup_allowed_events", "click dblclick mousedown pointerdown");
-/* 2410: disable Web Notifications
- * [NOTE] Web Notifications are behind a prompt (7002) ***/
-   // user_pref("dom.webnotifications.enabled", false); // [FF22+]
-   // user_pref("dom.webnotifications.serviceworker.enabled", false); // [FF44+]
-/* 2411: disable Push Notifications [FF44+]
- * Push allows websites to send you subscribed messages through Mozilla's Push Server,
- * and requires service workers to subscribe to and display, and is behind a prompt (7002)
- * [NOTE] Disabling service workers alone doesn't stop Firefox polling the Mozilla Push Server
- * [NOTE] To remove all subscriptions, reset "dom.push.userAgentID"
- * [1] https://support.mozilla.org/kb/push-notifications-firefox
- * [2] https://developer.mozilla.org/docs/Web/API/Push_API ***/
-   // user_pref("dom.push.enabled", false);
 
 /*** [SECTION 2600]: MISCELLANEOUS ***/
 user_pref("_user.js.parrot", "2600 syntax error: the parrot's run down the curtain!");
@@ -1179,6 +1170,7 @@ user_pref("_user.js.parrot", "7000 syntax error: the parrot's pushing up daisies
 /* 7006: onions
  * [WHY] Firefox doesn't support hidden services. Use Tor Browser ***/
    // user_pref("dom.securecontext.whitelist_onions", true); // 1382359
+   // user_pref("dom.securecontext.allowlist_onions", true); // [FF97+] 1382359/1744006
    // user_pref("network.http.referer.hideOnionSource", true); // 1305144
 /* 7007: referers
  * [WHY] Only cross-origin referers (1600s) need control ***/
@@ -1233,6 +1225,16 @@ user_pref("_user.js.parrot", "7000 syntax error: the parrot's pushing up daisies
  * [WHY] Already isolated (FF96+) with TCP (2701) behind a pref (2710)
  * or blocked with TCP in 3rd parties (FF95 or lower) ***/
    // user_pref("dom.serviceWorkers.enabled", false);
+/* 7018: disable Web Notifications
+ * [WHY] Web Notifications are behind a prompt (7002)
+ * [1] https://blog.mozilla.org/en/products/firefox/block-notification-requests/ ***/
+   // user_pref("dom.webnotifications.enabled", false); // [FF22+]
+   // user_pref("dom.webnotifications.serviceworker.enabled", false); // [FF44+]
+/* 7019: disable Push Notifications [FF44+]
+ * [WHY] Push requires subscription
+ * [NOTE] To remove all subscriptions, reset "dom.push.userAgentID"
+ * [1] https://support.mozilla.org/kb/push-notifications-firefox ***/
+   // user_pref("dom.push.enabled", false);
 
 /*** [SECTION 8000]: DON'T BOTHER: FINGERPRINTING
    [WHY] They are insufficient to help anti-fingerprinting and do more harm than good
