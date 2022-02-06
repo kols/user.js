@@ -3,7 +3,7 @@
   - removed from the arkenfox user.js
   - deprecated by Mozilla but listed in the arkenfox user.js in the past
 
-  Last updated: 11-December-2021
+  Last updated: 16-January-2022
 
   Instructions:
   - [optional] close Firefox and backup your profile
@@ -232,6 +232,7 @@
     'privacy.firstparty.isolate.block_post_message',
     'privacy.firstparty.isolate.restrict_opener_access',
     'privacy.firstparty.isolate.use_site',
+    'security.insecure_connection_text.enabled',
     /* 79-91 */
     'alerts.showFavicons',
     'browser.newtabpage.activity-stream.asrouter.providers.snippets',
@@ -287,7 +288,6 @@
     'browser.cache.disk.smart_size.first_run',
     'browser.cache.offline.insecure.enable',
     'browser.contentblocking.enabled',
-    'browser.eme.ui.enabled',
     'browser.laterrun.enabled',
     'browser.offline-apps.notify',
     'browser.rights.3.shown',
