@@ -2,11 +2,17 @@
 
 ## arkenfox user.js updater for macOS and Linux
 
-## version: 3.2
+## version: 3.9
 ## Author: Pat Johnson (@overdodactyl)
-## Additional contributors: @earthlng, @ema-pe, @claustromaniac
+## Additional contributors: @earthlng, @ema-pe, @claustromaniac, @infinitewarp
 
 ## DON'T GO HIGHER THAN VERSION x.9 !! ( because of ASCII comparison in update_updater() )
+
+# Check if running as root
+if [ "${EUID:-"$(id -u)"}" -eq 0 ]; then
+	printf "You shouldn't run this with elevated privileges (such as with doas/sudo).\n"
+	exit 1
+fi
 
 readonly CURRDIR=$(pwd)
 
@@ -62,7 +68,7 @@ show_banner() {
                 ####                                                                    ####
                 ############################################################################"
   echo -e "${NC}\n"
-  echo -e "Documentation for this script is available here: ${CYAN}https://github.com/arkenfox/user.js/wiki/3.3-Updater-Scripts${NC}\n"
+  echo -e "Documentation for this script is available here: ${CYAN}https://github.com/arkenfox/user.js/wiki/5.1-Updater-[Options]#-maclinux${NC}\n"
 }
 
 #########################
@@ -106,7 +112,7 @@ Optional Arguments:
 download_file() { # expects URL as argument ($1)
   declare -r tf=$(mktemp)
 
-  $DOWNLOAD_METHOD "${tf}" "$1" && echo "$tf" || echo '' # return the temp-filename or empty string on error
+  $DOWNLOAD_METHOD "${tf}" "$1" &>/dev/null && echo "$tf" || echo '' # return the temp-filename or empty string on error
 }
 
 open_file() { # expects one argument: file_path
@@ -195,10 +201,10 @@ update_updater() {
       echo -e "There is a newer version of updater.sh available. ${RED}Update and execute Y/N?${NC}"
       read -p "" -n 1 -r
       echo -e "\n\n"
-      [[ $REPLY =~ ^[Nn]$ ]] && return 0 # Update available, but user chooses not to update
+      [[ $REPLY =~ ^[Yy]$ ]] || return 0   # Update available, but user chooses not to update
     fi
   else
-    return 0 # No update available
+    return 0   # No update available
   fi
   mv "${tmpfile}" "$SCRIPT_FILE"
   chmod u+x "$SCRIPT_FILE"
@@ -253,7 +259,7 @@ update_userjs() {
     echo -e "This script will update to the latest user.js file and append any custom configurations from user-overrides.js. ${RED}Continue Y/N? ${NC}"
     read -p "" -n 1 -r
     echo -e "\n"
-    if [[ $REPLY =~ ^[Nn]$ ]]; then
+    if ! [[ $REPLY =~ ^[Yy]$ ]]; then
       echo -e "${RED}Process aborted${NC}"
       rm "$newfile"
       return 1
@@ -385,6 +391,17 @@ show_banner
 update_updater "$@"
 
 getProfilePath # updates PROFILE_PATH or exits on error
-cd "$PROFILE_PATH" && update_userjs
+cd "$PROFILE_PATH" || exit 1
+
+# Check if any files have the owner/group as root/wheel.
+if [ -n "$(find ./ -user 0 -o -group 0)" ]; then
+	printf 'It looks like this script was previously run with elevated privileges,
+you will need to change ownership of the following files to your user:\n'
+	find . -user 0 -o -group 0
+	cd "$CURRDIR"
+	exit 1
+fi
+
+update_userjs
 
 cd "$CURRDIR"

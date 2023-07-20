@@ -3,10 +3,10 @@ TITLE arkenfox user.js updater
 
 REM ## arkenfox user.js updater for Windows
 REM ## author: @claustromaniac
-REM ## version: 4.15
-REM ## instructions: https://github.com/arkenfox/user.js/wiki/3.3-Updater-Scripts
+REM ## version: 4.19
+REM ## instructions: https://github.com/arkenfox/user.js/wiki/5.1-Updater-[Options]#-windows
 
-SET v=4.15
+SET v=4.19
 
 VERIFY ON
 CD /D "%~dp0"
@@ -177,8 +177,8 @@ IF EXIST user.js.new (
 		IF DEFINED _singlebackup (
 			MOVE /Y user.js user.js.bak >nul
 		) ELSE (
-			SET "_time=!time: =0!"
-			MOVE /Y user.js "user-backup-!date:/=-!_!_time::=.!.js" >nul
+			FOR /F "delims=" %%# IN ('powershell get-date -format "{yyyyMMdd_HHmmss}"') DO @SET ldt=%%#
+			MOVE /Y user.js "user-backup-!ldt!.js" >nul
 		)
 		REN user.js.new user.js
 		CALL :message "Update complete."
