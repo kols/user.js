@@ -35,3 +35,5 @@ user_pref("privacy.clearOnShutdown.cache", true);
 user_pref("privacy.clearOnShutdown.downloads", false);
 user_pref("privacy.clearOnShutdown.history", false);
 user_pref("privacy.clearOnShutdown.sessions", fase);
+
+user_pref("dom.serviceWorkers.enabled", true);                                                                          user_pref("dom.push.enabled", true);
