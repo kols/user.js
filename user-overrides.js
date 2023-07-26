@@ -27,13 +27,14 @@ user_pref("ui.prefersReducedMotion", 1);
 
 // always send referer header (mitigate auth problems)
 user_pref("network.http.referer.XOriginPolicy", 0);
+user_pref("network.http.referer.XOriginTrimmingPolicy", 0);
 
 // resume previous session
 user_pref("browser.startup.page", 3);
 /// do not clear data on shutdown
-user_pref("privacy.clearOnShutdown.cache", true);
+user_pref("privacy.clearOnShutdown.cache", false);
 user_pref("privacy.clearOnShutdown.downloads", false);
 user_pref("privacy.clearOnShutdown.history", false);
-user_pref("privacy.clearOnShutdown.sessions", fase);
+user_pref("privacy.clearOnShutdown.cookies", false);
 
 user_pref("dom.serviceWorkers.enabled", true);                                                                          user_pref("dom.push.enabled", true);
